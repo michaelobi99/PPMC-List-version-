@@ -1,6 +1,5 @@
 #include <filesystem>
 #include <chrono>
-#include <thread>
 #include <format>
 #include "Decoder.h"
 #include "Encoder.h"

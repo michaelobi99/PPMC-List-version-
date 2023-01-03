@@ -1,11 +1,6 @@
 #pragma once
 
-#include <iostream>
 #include <fstream>
-#include <algorithm>
-#include <numeric>
-#include <ranges>
-#include <format>
 #include "BitIO.h"
 #include "Model.h"
 

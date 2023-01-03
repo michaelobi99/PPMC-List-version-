@@ -1,10 +1,6 @@
 #pragma once
-#include <iostream>
 #include <fstream>
-#include <algorithm>
-#include <numeric>
 #include <format>
-#include <ranges>
 #include "BitIO.h"
 #include <string>
 #include <bitset>
