@@ -38,7 +38,7 @@ int main() {
 		std::fstream input(R"(..\PredictionByPartialMatching(PPMC)\testFile.txt)", std::ios_base::in | std::ios_base::binary);
 		if (!input.is_open())
 			exit(1);
-		uint32_t order{ 3 };
+		uint32_t order{ 4 };
 		std::cout << "Input the context order: ";
 		std::cin >> order;
 		auto output = stl::OpenOutputBitFile(R"(..\PredictionByPartialMatching(PPMC)\testFile2.txt)");

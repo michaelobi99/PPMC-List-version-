@@ -14,10 +14,7 @@
 using USHORT = std::uint16_t;
 
 
-//Arena<1024 * 1024 * 5> arena{};
 struct Trie {
-public:
-	Trie() : root{ new Node } {}
 	struct Node {
 		std::unique_ptr<Node> downPointer; //pointer to the first child
 		std::unique_ptr<Node> next; //next sibling of this node under the same parent
@@ -52,12 +49,6 @@ public:
 			}
 			++noOfChildren;
 		}
-		/*void* operator new(std::size_t memSize) {
-			return arena.allocate(memSize);
-		}
-		void operator delete(void* memory, std::size_t memSize) {
-			arena.deallocate(static_cast<std::byte*>(memory), memSize);
-		}*/
 	};
 	std::unique_ptr<Node> root;
 	uint8_t maxDepth{ 0 };

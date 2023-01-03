@@ -19,22 +19,14 @@ public:
 	}
 	auto allocate(size_t n) -> std::byte* {
 		static int counter = 0;
-		//counter += (8 * 257);
-		//std::cout << counter / (float)(1000 * 1000)<<"\n";
 		const auto aligned_n = align_up(n);
 		const auto available_bytes = static_cast<decltype(aligned_n)>(buffer + N - ptr);
 		//std::cout << "available bytes = " << available_bytes << "\n";
 		if (available_bytes >= aligned_n) {
-			//std::cout << "Called: " << ++counter << "\n";
 			auto* r = ptr;
 			ptr += aligned_n;
 			return r;
 		}
-		/*else {
-			this->reset();
-			return nullptr;
-		}*/
-		//std::cout << "lol, Called: " << ++counter << "\n";
 		return static_cast<std::byte*>(::operator new(n));
 	}
 	auto deallocate(std::byte* p, size_t n) noexcept -> void {

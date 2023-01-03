@@ -34,7 +34,6 @@ void encodeSymbol(std::unique_ptr<stl::BitFile>& output, Symbol& s, USHORT& low,
 			low &= ~(1 << 14);
 		}
 		else {
-			//std::cout << std::format("low: {},  high: {}\n", low, high);
 			return;
 		}
 		low <<= 1;
