@@ -60,26 +60,18 @@ void compressFile(std::fstream& input, std::unique_ptr<stl::BitFile>& output, ui
 	bool escaped{};
 	for (;;) {
 		c = input.get();
-		//std::cout << "\n\ncharacter = " << char(c) << "\n";
 		if (c == EOF)
 			c = END_OF_STREAM;
 		escaped = convertIntToSymbol(c, s);
-		//std::cout << "got here1\n";
 		encodeSymbol(output, s, low, high, underflowBits);
-		//std::cout << "got here2\n";
-		//std::cout << "low: "<<s.lowCount << " high: " << s.highCount << "\n";
 		while (escaped) {
 			escaped = convertIntToSymbol(c, s);
-			//std::cout << "got here3\n";
 			encodeSymbol(output, s, low, high, underflowBits);
-			//std::cout << "got here3\n";
-			//std::cout << "low: " << s.lowCount << " high: " << s.highCount << "\n";
 		}
 		if (c == END_OF_STREAM)
 			break;
 		updateModel(c);
 	}
-	//std::cout << "EOF\n";
 	flushArithmeticEncoder(output, high, underflowBits);
 	stl::outputBits(output, 0L, 16);
 }

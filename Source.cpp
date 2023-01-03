@@ -34,7 +34,6 @@ uintmax_t fileSize(fs::path const& path) {
 
 int main() {
 	auto timer = Timer();
-
 	try {
 		std::fstream input(R"(..\PredictionByPartialMatching(PPMC)\testFile.txt)", std::ios_base::in | std::ios_base::binary);
 		if (!input.is_open())
