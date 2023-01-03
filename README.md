@@ -9,7 +9,8 @@ I tested the algorithm on several files with very good compression ratios, usual
 The compression efficiency was slightly improved after implenting exclusion.
 
 Memory Usage:
-The memory requirement for the PPM is very large, and increases with increasing context length.
+The memory requirement for the PPM is very large. However with the use of a list instead os a vector in the trie, the memory consumption was 
+reduced by an order of ~50
 
 Compression speed:
 The compression speed of this implementation averages at about 1.7 mb/second.
