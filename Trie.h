@@ -23,6 +23,7 @@ struct Trie {
 		char symbol;
 		Node() : downPointer{ nullptr }, next{ nullptr }, vinePtr { nullptr }, contextCount{ 0 }, depthInTrie{ 0 }, noOfChildren{ 0 }, symbol{ char() } {}
 		Node* find(int index) {
+			//printf("Entered find\n");
 			if (index < 0 || index > 256)
 				throw std::out_of_range("ERROR: index out of bound");
 			Node* cursor = downPointer.get();
@@ -31,21 +32,32 @@ struct Trie {
 					break;
 				cursor = cursor->next.get();
 			}
+			//printf("left find\n");
 			return cursor;
 		}
-		void insert(char symbol) {
+		Node* insert(int symbol) {
+			//printf("Entered insert\n");
 			if (noOfChildren == 0) {
 				downPointer = std::make_unique<Node>();
-				downPointer->symbol = symbol;
+				downPointer->symbol = (char)symbol;
+				downPointer->depthInTrie = this->depthInTrie + 1;
+				downPointer->contextCount = 1;
+				++noOfChildren;
+				return downPointer.get();
 			}
 			else {
 				Node* tempCursor = downPointer.get();
 				while (tempCursor->next.get())
 					tempCursor = tempCursor->next.get();
 				tempCursor->next = std::make_unique<Node>();
-				tempCursor->next->symbol = symbol;
+				tempCursor = tempCursor->next.get();
+				tempCursor->symbol = (char)symbol;
+				tempCursor->depthInTrie = this->depthInTrie + 1;
+				tempCursor->contextCount = 1;
+				++noOfChildren;
+				return tempCursor;
 			}
-			++noOfChildren;
+			//printf("left insert\n");
 		}
 	};
 	std::unique_ptr<Node> root;

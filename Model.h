@@ -156,42 +156,37 @@ int convertSymbolToInt(long index, Symbol& s) {
 
 
 void updateModel(int c) {
-	static int counter = 0;
+	//printf("c = %d", c);
 	Trie::Node* recentlyUpdatedNodePtr{ basePtr };
 	Trie::Node* vineUpdater{ nullptr };
 	if (recentlyUpdatedNodePtr->depthInTrie == trie.maxDepth) {
 		recentlyUpdatedNodePtr = recentlyUpdatedNodePtr->vinePtr;
 	}
-	if (recentlyUpdatedNodePtr->find(c)) {//if not nullptr...Hence, symbol is present
-		recentlyUpdatedNodePtr->find(c)->contextCount++;
-		if (recentlyUpdatedNodePtr->find(c)->contextCount == 255)
+	if (auto ptr = recentlyUpdatedNodePtr->find(c); ptr) {//if not nullptr...Hence, symbol is present
+		ptr->contextCount++;
+		if (ptr->contextCount == 255)
 			rescaleContextCount(recentlyUpdatedNodePtr);
+		basePtr = ptr;
 	}
 	else {
-		recentlyUpdatedNodePtr->insert(c);
-		recentlyUpdatedNodePtr->find(c)->depthInTrie = recentlyUpdatedNodePtr->depthInTrie + 1;
-		recentlyUpdatedNodePtr->find(c)->contextCount++;
+		basePtr = recentlyUpdatedNodePtr->insert(c);
 	}
-	basePtr = recentlyUpdatedNodePtr->find(c);
 	vineUpdater = basePtr;
 
 	while (recentlyUpdatedNodePtr->depthInTrie > 0) {
 		recentlyUpdatedNodePtr = recentlyUpdatedNodePtr->vinePtr;
-		if (recentlyUpdatedNodePtr->find(c)) {
-			recentlyUpdatedNodePtr->find(c)->contextCount++;
-			if (recentlyUpdatedNodePtr->find(c)->contextCount == 255)
+		if (auto ptr = recentlyUpdatedNodePtr->find(c); ptr) {
+			ptr->contextCount++;
+			if (ptr->contextCount == 255)
 				rescaleContextCount(recentlyUpdatedNodePtr);
+			vineUpdater->vinePtr = ptr;
 		}
 		else {
-			recentlyUpdatedNodePtr->insert(c);
-			recentlyUpdatedNodePtr->find(c)->depthInTrie = recentlyUpdatedNodePtr->depthInTrie + 1;
-			recentlyUpdatedNodePtr->find(c)->contextCount++;
+			vineUpdater->vinePtr = recentlyUpdatedNodePtr->insert(c);
 		}
-
-		vineUpdater->vinePtr = recentlyUpdatedNodePtr->find(c);
-		vineUpdater = recentlyUpdatedNodePtr->find(c);
+		vineUpdater = vineUpdater->vinePtr;
 	}
-	//at this point recentlyUpdatedNodePtr will be pointing to the root. All order-1 context symbols
+	//at this point recentlyUpdatedNodePtr will be pointing to the root. All order 1 context symbols
 	//have their vine pointig to the root
 	recentlyUpdatedNodePtr->find(c)->vinePtr = recentlyUpdatedNodePtr;
 	cursor = basePtr;
