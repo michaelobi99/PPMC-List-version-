@@ -25,7 +25,6 @@ void encodeSymbol(std::unique_ptr<stl::BitFile>& output, Symbol& s, USHORT& low,
 		else if ((low & 0x4000) && !(high & 0x4000)) {
 			underflowBits++;
 			//toggle the second MSB in both low and high.
-			//the shifting operation at the end of the loop will set things right
 			high |= (1 << 14);
 			low &= ~(1 << 14);
 		}

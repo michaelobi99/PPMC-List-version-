@@ -4,14 +4,14 @@
 #include "BitIO.h"
 #include "Model.h"
 
-void initializeArithmeticDecoder(std::unique_ptr<stl::BitFile>& input, USHORT& code) {
+inline void initializeArithmeticDecoder(std::unique_ptr<stl::BitFile>& input, USHORT& code) {
 	for (int i{ 0 }; i < 16; ++i) {
 		code <<= 1;
 		code |= stl::inputBit(input);
 	}
 }
 
-long getCurrentIndex(Symbol& s, USHORT low, USHORT high, USHORT code) {
+inline long getCurrentIndex(Symbol& s, USHORT low, USHORT high, USHORT code) {
 	long range{ high - low + 1 };
 	long index = (long)(((code - low) + 1) * s.scale - 1) / range;
 	return index;

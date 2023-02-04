@@ -23,8 +23,8 @@ void initializeModel(uint32_t order) {
 }
 
 void rescaleContextCount(Trie::Node* cursor) { 
-	Trie::Node* children = cursor->downPointer.get();
-	for (; children; children = children->next.get()) {
+	Trie::Node* children = cursor->downPointer;
+	for (; children; children = children->next) {
 		children->contextCount = (children->contextCount + 1) / 2;
 	}
 }
@@ -35,11 +35,11 @@ void initializeTotalsToCurrentTable() {
 	uint16_t tempArray[SYMBOL_COUNT];
 	std::memset(tempArray, 0, sizeof(tempArray));
 	if (cursor) {//context exists
-		Trie::Node* children = cursor->downPointer.get();
-		for (; children; children = children->next.get()) {
+		Trie::Node* children = cursor->downPointer;
+		for (; children; children = children->next) {
 			tempArray[(int)children->symbol] = children->contextCount;
 		}
-		for (i = 0; i < (SYMBOL_COUNT - 1); i += 8) {
+		for (i = 0; i < (SYMBOL_COUNT - 1); i += 16) {
 			totals[i + 1] = totals[i] +
 				((excludedCharacters[i]) ? 0 : tempArray[i]);
 			totals[i + 2] = totals[i + 1] +
@@ -56,13 +56,29 @@ void initializeTotalsToCurrentTable() {
 				((excludedCharacters[i + 6]) ? 0 : tempArray[i + 6]);
 			totals[i + 8] = totals[i + 7] +
 				((excludedCharacters[i + 7]) ? 0 : tempArray[i + 7]);
+			totals[i + 9] = totals[i + 8] +
+				((excludedCharacters[i + 8]) ? 0 : tempArray[i + 8]);
+			totals[i + 10] = totals[i + 9] +
+				((excludedCharacters[i + 9]) ? 0 : tempArray[i + 9]);
+			totals[i + 11] = totals[i + 10] +
+				((excludedCharacters[i + 10]) ? 0 : tempArray[i + 10]);
+			totals[i + 12] = totals[i + 11] +
+				((excludedCharacters[i + 11]) ? 0 : tempArray[i + 11]);
+			totals[i + 13] = totals[i + 12] +
+				((excludedCharacters[i + 12]) ? 0 : tempArray[i + 12]);
+			totals[i + 14] = totals[i + 13] +
+				((excludedCharacters[i + 13]) ? 0 : tempArray[i + 13]);
+			totals[i + 15] = totals[i + 14] +
+				((excludedCharacters[i + 14]) ? 0 : tempArray[i + 14]);
+			totals[i + 16] = totals[i + 15] +
+				((excludedCharacters[i + 15]) ? 0 : tempArray[i + 15]);
 		}
 		totals[SYMBOL_COUNT] = totals[SYMBOL_COUNT - 1] +
 			((excludedCharacters[SYMBOL_COUNT - 1]) ? 0 : tempArray[SYMBOL_COUNT - 1]);
 		totals[SYMBOL_COUNT + 1] = totals[SYMBOL_COUNT] + cursor->noOfChildren;
 	}
 	else {//cursor is at roots vinePtr, i.e negative one context
-		for (i = 0; i < (SYMBOL_COUNT - 1); i += 8) {
+		for (i = 0; i < (SYMBOL_COUNT - 1); i += 16) {
 			totals[i + 1] = totals[i] +
 				((excludedCharacters[i]) ? 0 : negativeOneContextTable[i]);
 			totals[i + 2] = totals[i + 1] +
@@ -79,6 +95,22 @@ void initializeTotalsToCurrentTable() {
 				((excludedCharacters[i + 6]) ? 0 : negativeOneContextTable[i + 6]);
 			totals[i + 8] = totals[i + 7] +
 				((excludedCharacters[i + 7]) ? 0 : negativeOneContextTable[i + 7]);
+			totals[i + 9] = totals[i + 8] +
+				((excludedCharacters[i + 8]) ? 0 : negativeOneContextTable[i + 8]);
+			totals[i + 10] = totals[i + 9] +
+				((excludedCharacters[i + 9]) ? 0 : negativeOneContextTable[i + 9]);
+			totals[i + 11] = totals[i + 10] +
+				((excludedCharacters[i + 10]) ? 0 : negativeOneContextTable[i + 10]);
+			totals[i + 12] = totals[i + 11] +
+				((excludedCharacters[i + 11]) ? 0 : negativeOneContextTable[i + 11]);
+			totals[i + 13] = totals[i + 12] +
+				((excludedCharacters[i + 12]) ? 0 : negativeOneContextTable[i + 12]);
+			totals[i + 14] = totals[i + 13] +
+				((excludedCharacters[i + 13]) ? 0 : negativeOneContextTable[i + 13]);
+			totals[i + 15] = totals[i + 14] +
+				((excludedCharacters[i + 14]) ? 0 : negativeOneContextTable[i + 14]);
+			totals[i + 16] = totals[i + 15] +
+				((excludedCharacters[i + 15]) ? 0 : negativeOneContextTable[i + 15]);
 		}
 		totals[SYMBOL_COUNT] = totals[SYMBOL_COUNT - 1] +
 			((excludedCharacters[SYMBOL_COUNT - 1]) ? 0 : negativeOneContextTable[SYMBOL_COUNT - 1]);
@@ -91,8 +123,8 @@ void getProbability() {
 }
 
 void fillCharactersToBeExcluded() {
-	Trie::Node* children = cursor->downPointer.get();
-	for (; children; children = children->next.get()) {
+	Trie::Node* children = cursor->downPointer;
+	for (; children; children = children->next) {
 		excludedCharacters[children->symbol] = 1;
 	}
 }
