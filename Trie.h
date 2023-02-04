@@ -2,7 +2,6 @@
 #include <memory>
 #include <iostream>
 #include <stdexcept>
-#include "Arena.h"
 
 #define ESCAPE 257
 #define END_OF_STREAM 256
@@ -17,31 +16,24 @@ struct Trie {
 		std::unique_ptr<Node> downPointer; //pointer to the first child
 		std::unique_ptr<Node> next; //next sibling of this node under the same parent
 		Node* vinePtr;
+		int symbol;
 		std::uint8_t contextCount;
 		std::uint8_t depthInTrie;
 		std::uint8_t noOfChildren;
-		char symbol;
 		Node() : downPointer{ nullptr }, next{ nullptr }, vinePtr { nullptr }, contextCount{ 0 }, depthInTrie{ 0 }, noOfChildren{ 0 }, symbol{ char() } {}
 		Node* find(int index) {
-			//printf("Entered find\n");
-			if (index < 0 || index > 256)
-				throw std::out_of_range("ERROR: index out of bound");
 			Node* cursor = downPointer.get();
-			while (cursor) {
-				if ((int)cursor->symbol == index)
-					break;
+			while (cursor && cursor->symbol != index) {
 				cursor = cursor->next.get();
 			}
-			//printf("left find\n");
 			return cursor;
 		}
 		Node* insert(int symbol) {
-			//printf("Entered insert\n");
 			if (noOfChildren == 0) {
 				downPointer = std::make_unique<Node>();
-				downPointer->symbol = (char)symbol;
-				downPointer->depthInTrie = this->depthInTrie + 1;
-				downPointer->contextCount = 1;
+				downPointer->symbol = symbol;
+				downPointer->depthInTrie = depthInTrie + 1;
+				downPointer->contextCount++;
 				++noOfChildren;
 				return downPointer.get();
 			}
@@ -50,14 +42,12 @@ struct Trie {
 				while (tempCursor->next.get())
 					tempCursor = tempCursor->next.get();
 				tempCursor->next = std::make_unique<Node>();
-				tempCursor = tempCursor->next.get();
-				tempCursor->symbol = (char)symbol;
-				tempCursor->depthInTrie = this->depthInTrie + 1;
-				tempCursor->contextCount = 1;
+				tempCursor->next->symbol = symbol;
+				tempCursor->next->depthInTrie = depthInTrie + 1;
+				tempCursor->next->contextCount++;
 				++noOfChildren;
-				return tempCursor;
+				return tempCursor->next.get();
 			}
-			//printf("left insert\n");
 		}
 	};
 	std::unique_ptr<Node> root;

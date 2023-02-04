@@ -1,5 +1,6 @@
 #pragma once
 #include "Trie.h"
+#include <vector>
 
 struct Symbol {
 	USHORT lowCount;
@@ -33,7 +34,7 @@ void initializeTotalsToCurrentTable() {
 	int i = 0;
 	uint16_t tempArray[SYMBOL_COUNT];
 	std::memset(tempArray, 0, sizeof(tempArray));
-	if (cursor) {
+	if (cursor) {//context exists
 		Trie::Node* children = cursor->downPointer.get();
 		for (; children; children = children->next.get()) {
 			tempArray[(int)children->symbol] = children->contextCount;
@@ -60,7 +61,7 @@ void initializeTotalsToCurrentTable() {
 			((excludedCharacters[SYMBOL_COUNT - 1]) ? 0 : tempArray[SYMBOL_COUNT - 1]);
 		totals[SYMBOL_COUNT + 1] = totals[SYMBOL_COUNT] + cursor->noOfChildren;
 	}
-	else {
+	else {//cursor is at roots vinePtr, i.e negative one context
 		for (i = 0; i < (SYMBOL_COUNT - 1); i += 8) {
 			totals[i + 1] = totals[i] +
 				((excludedCharacters[i]) ? 0 : negativeOneContextTable[i]);
@@ -103,14 +104,7 @@ bool convertIntToSymbol(int c, Symbol& s) {
 			if (cursor->noOfChildren > 0) break;
 		}
 	}
-	if (!cursor) {//context doesn't exist, i.e cursor is at roots vinePtr
-		getProbability();
-		std::memset(excludedCharacters.data(), 0, std::size(excludedCharacters));
-		s.highCount = totals[c + 1];
-		s.lowCount = totals[c];
-		escaped = false;
-	}
-	else if (cursor->find(c)) { //current symbol exists in context
+	if (!cursor || cursor->find(c)) {//context doesn't exist, i.e cursor is at roots vinePtr
 		getProbability();
 		std::memset(excludedCharacters.data(), 0, std::size(excludedCharacters));
 		s.highCount = totals[c + 1];
@@ -132,7 +126,8 @@ bool convertIntToSymbol(int c, Symbol& s) {
 
 void getSymbolScale(Symbol& s) {
 	while (cursor) {
-		if (cursor->noOfChildren > 0) break;
+		if (cursor->noOfChildren > 0) 
+			break;
 		cursor = cursor->vinePtr;
 	}
 	getProbability();
@@ -156,13 +151,13 @@ int convertSymbolToInt(long index, Symbol& s) {
 
 
 void updateModel(int c) {
-	//printf("c = %d", c);
+	//printf("%c", c);
 	Trie::Node* recentlyUpdatedNodePtr{ basePtr };
 	Trie::Node* vineUpdater{ nullptr };
 	if (recentlyUpdatedNodePtr->depthInTrie == trie.maxDepth) {
 		recentlyUpdatedNodePtr = recentlyUpdatedNodePtr->vinePtr;
 	}
-	if (auto ptr = recentlyUpdatedNodePtr->find(c); ptr) {//if not nullptr...Hence, symbol is present
+	if (auto ptr = recentlyUpdatedNodePtr->find(c); ptr) {//if not nullptr, symbol is present
 		ptr->contextCount++;
 		if (ptr->contextCount == 255)
 			rescaleContextCount(recentlyUpdatedNodePtr);
@@ -173,7 +168,7 @@ void updateModel(int c) {
 	}
 	vineUpdater = basePtr;
 
-	while (recentlyUpdatedNodePtr->depthInTrie > 0) {
+	while (recentlyUpdatedNodePtr->depthInTrie > 0) {//while not at root
 		recentlyUpdatedNodePtr = recentlyUpdatedNodePtr->vinePtr;
 		if (auto ptr = recentlyUpdatedNodePtr->find(c); ptr) {
 			ptr->contextCount++;
@@ -188,7 +183,8 @@ void updateModel(int c) {
 	}
 	//at this point recentlyUpdatedNodePtr will be pointing to the root. All order 1 context symbols
 	//have their vine pointig to the root
-	recentlyUpdatedNodePtr->find(c)->vinePtr = recentlyUpdatedNodePtr;
+	auto ptr = recentlyUpdatedNodePtr->find(c);
+	ptr->vinePtr = recentlyUpdatedNodePtr;
 	cursor = basePtr;
 	escapeContext = basePtr->depthInTrie;
 }

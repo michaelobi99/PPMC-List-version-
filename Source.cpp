@@ -34,7 +34,7 @@ uintmax_t fileSize(fs::path const& path) {
 int main() {
 	auto timer = Timer();
 	try {
-		std::fstream input(R"(..\PredictionByPartialMatching(PPMC)\text.txt)", std::ios_base::in | std::ios_base::binary);
+		std::fstream input(R"(..\PredictionByPartialMatching(PPMC)\enwik9)", std::ios_base::in | std::ios_base::binary);
 		if (!input.is_open())
 			exit(1);
 		uint32_t order{ 4 };
@@ -61,7 +61,7 @@ int main() {
 		output1.close();
 
 		//print file sizes
-		std::cout << std::format("Original file size = {} bytes\n", fileSize(fs::path(R"(..\PredictionByPartialMatching(PPMC)\text.txt)")));
+		std::cout << std::format("Original file size = {} bytes\n", fileSize(fs::path(R"(..\PredictionByPartialMatching(PPMC)\enwik9)")));
 		std::cout << std::format("Compressed file size = {} bytes\n", fileSize(fs::path(R"(..\PredictionByPartialMatching(PPMC)\testFile2.txt)")));
 		std::cout << std::format("Expanded file size = {} bytes\n", fileSize(fs::path(R"(..\PredictionByPartialMatching(PPMC)\testFile3.txt)")));
 	}
