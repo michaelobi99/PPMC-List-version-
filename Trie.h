@@ -21,8 +21,8 @@ struct Trie {
 		std::uint8_t contextCount;
 		std::uint8_t depthInTrie;
 		std::uint8_t noOfChildren;
-		Node() : downPointer{ nullptr }, next{ nullptr }, prev{ nullptr }, vinePtr { nullptr }, contextCount{ 0 },
-			depthInTrie{ 0 }, noOfChildren{ 0 }, symbol{ char() } {}
+		Node() : downPointer{ nullptr }, next{ nullptr }, prev{ nullptr }, vinePtr { nullptr }, symbol{ char() }, contextCount{ 0 },
+			depthInTrie{ 0 }, noOfChildren{ 0 } {}
 		Node* find(int index) {
 			Node* cursor = downPointer;
 			while (cursor && cursor->symbol != index) {
@@ -46,29 +46,6 @@ struct Trie {
 				}
 				if (cursor->symbol == symbol) {
 					cursor->contextCount++;
-					Node* tempCursor = cursor;
-					while (tempCursor->prev && tempCursor->prev->contextCount < cursor->contextCount) {
-						tempCursor = tempCursor->prev;
-					}
-					if (tempCursor->prev) {
-						cursor->prev->next = cursor->next;
-						if (cursor->next)
-							cursor->next->prev = cursor->prev;
-						cursor->next = tempCursor;
-						cursor->prev = tempCursor->prev;
-						tempCursor->prev = cursor;
-					}
-					else {
-						if (cursor != tempCursor) {
-							cursor->prev->next = cursor->next;
-							if (cursor->next)
-								cursor->next->prev = cursor->prev;
-							cursor->next = tempCursor;
-							cursor->prev = nullptr;
-							tempCursor->prev = cursor;
-							downPointer = cursor;
-						}
-					}
 				}
 				else {
 					cursor->next = new Node;
@@ -76,9 +53,10 @@ struct Trie {
 					cursor->next->depthInTrie = depthInTrie + 1;
 					cursor->next->contextCount++;
 					cursor->next->prev = cursor;
+					cursor = cursor->next;
+					++noOfChildren;
 				}
-				++noOfChildren;
-				return cursor->next;
+				return cursor;
 			}
 		}
 		~Node() {

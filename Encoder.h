@@ -54,7 +54,6 @@ void compressFile(std::fstream& input, std::unique_ptr<stl::BitFile>& output, ui
 	bool escaped{};
 	for (;;) {
 		c = input.get();
-		//printf("%c\n", (char)c);
 		if (c == EOF)
 			c = END_OF_STREAM;
 		escaped = convertIntToSymbol(c, s);
